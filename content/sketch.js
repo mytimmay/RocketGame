@@ -1,5 +1,5 @@
 var serial; // variable to hold an instance of the serialport library
-var portName = "COM4"; // fill in your serial port name here
+var portName = "COM5"; // fill in your serial port name here
 
 var speedValue;
 var joystickXValue;
@@ -26,8 +26,8 @@ var wins;
 var gameState;
 
 function preload() {
-  fontTitle = loadFont("assets/spaceage.ttf");
-  fontOther = loadFont("assets/spaceage.ttf");
+  fontTitle = loadFont("assets/nasalization-rg.ttf");
+  fontOther = loadFont("assets/nasalization-rg.ttf");
 }
 
 function setup() {
@@ -49,10 +49,21 @@ function setup() {
   //Player
   readyPlayer = false;
   player = createSprite(400, 200, 50, 50);
-  Rocket = loadImage("assets/FullRocket.png");
-  player.addImage(Rocket);
+  //Rocket = loadImage("assets/FullRocket.png");
+  //player.addImage(Rocket);
+
+  var rocketAnimation = player.addAnimation("still", "assets/FullRocket.png");
+  rocketAnimation.offX = 18;
+  player.addAnimation(
+    "lift",
+    "assets/Feuer.png",
+    "assets/vordererRauch.png",
+    "assets/hintererRauch.png"
+  );
+  player.addAnimation("flight", "assets/Feuer.png");
+
   xPlayer = windowWidth / 2;
-  yPlayer = windowHeight / 2;
+  yPlayer = windowHeight -= 200;
   pointsPlayer = 0;
   bulletsPlayer = new Group();
 }
@@ -64,29 +75,37 @@ function draw() {
 
     fill(255);
     textSize(20);
+    textAlign(CENTER, CENTER);
     textFont(fontTitle);
     text(
       "Willkommen im Astronautenprogramm und zu deinem ersten Flug ins All. \n  Drücke Start um deine Reise ins All zu beginnen.",
-      windowWidth / 10,
-      70
+      windowWidth / 2,
+      windowHeight / 3
     );
 
     fill(255);
     textSize(15);
     textFont(fontOther);
-    text("Instructions", windowWidth / 2 - 90, 180);
-    rect(windowWidth / 2 - 300, 190, 600, 1);
+    text("Instructions", windowWidth / 2, windowHeight / 2);
 
     textSize(15);
-    text("- Use the joystick to move", windowWidth / 4, 220);
-    text("- Press the blue button to reload", windowWidth / 4, 250);
-    text("- Press the red button to reload", windowWidth / 4, 290);
+    text("- Use the joystick to move", windowWidth / 2, windowHeight / 1.8);
+    text(
+      "- Press the blue button to reload",
+      windowWidth / 2,
+      windowHeight / 1.7
+    );
+    text(
+      "- Press the red button to reload",
+      windowWidth / 2,
+      windowHeight / 1.6
+    );
 
     textSize(15);
     text(
       "To ready up, press the blue button.",
-      windowWidth / 4,
-      windowHeight / 2
+      windowWidth / 2,
+      windowHeight / 1.4
     );
 
     //image(Rocket, windowWidth / 2, windowHeight / 2);
@@ -114,12 +133,13 @@ function draw() {
     background("black");
 
     fill(255);
+    textAlign(CENTER, CENTER);
     textSize(20);
     textFont(fontTitle);
     text(
-      "Um für deine erste Reise ins All gut vorbereitet zu sein musst du genug Sauerstoff und Treibstoff tanken. Da die Mengen begrenzt sind darfst du nicht mehr als insgesamt 500kg mitnehmen. Bestätige, wenn du die Rakete fertig getankt hast. ",
-      windowWidth / 10,
-      70
+      "Um für deine erste Reise ins All gut vorbereitet zu sein \n musst du genug Sauerstoff und Treibstoff tanken. \n Da die Mengen begrenzt sind darfst du nicht mehr als insgesamt 500kg mitnehmen. \n Bestätige, wenn du die Rakete fertig getankt hast. ",
+      windowWidth / 2,
+      windowHeight / 3
     );
 
     // Player 1 Location
@@ -141,6 +161,31 @@ function draw() {
       bulletsPlayer.add(bulletPlayer);
     }
 
+    // constant downward speed
+    // (i.e., gravity)
+    //player.addSpeed(1, 90);
+
+    //Rocket start animation
+    if (speedValue > 1 && speedValue < 20) {
+      player.changeAnimation(lift);
+    } else if (speedValue > 20) {
+      player.changeAnimation(flight);
+    } else {
+      player.changeAnimation(still);
+    }
+
+    /*
+    //Rocket animation
+    if (rocketOneToggle == 1 && rocketOneButton == 1) {
+      rocket.getImageAt(1);
+    }
+    if (rocketTwoToggle == 1 && rocketTwoButton == 1) {
+      rocket.getImageAt(2);
+    }
+    if (rocketThreeToggle == 1 && rocketThreeButton == 1) {
+      rocket.getImageAt(3);
+    }
+*/
     // Update Values
     drawSprites();
     updateValues();
@@ -152,19 +197,20 @@ function draw() {
     background("black");
 
     fill(255);
-    textSize(80);
+    textAlign(CENTER, CENTER);
+    textSize(20);
     textFont(fontTitle);
     text(
-      "Gut gemacht! Die Rakete ist nun betankt. Jetzt ist alles bereit. Nicht nervös werden, wir begleiten dich auf deiner Reise. Bist du bereit für dein größtes Abenteuer? Sehr gut, dann beginne nun mit der Starteinleitung. Viel Erfolg!",
-      windowWidth / 10,
-      70
+      "Gut gemacht! Die Rakete ist nun betankt. Jetzt ist alles bereit. Nicht nervös werden, wir begleiten dich auf deiner Reise. \n Bist du bereit für dein größtes Abenteuer? Sehr gut, dann beginne nun mit der Starteinleitung. Viel Erfolg!",
+      windowWidth / 2,
+      windowHeight / 3
     );
 
     textFont(fontOther);
     textSize(200);
 
     fill("black");
-    textSize(40);
+    textSize(15);
     text(
       "To restart, press the blue button.",
       windowWidth / 4,
@@ -176,7 +222,7 @@ function draw() {
       gameState = 0;
     }
   }
-
+  textAlign(LEFT);
   //ellipse(joystickXValue, joystickYValue, 50, 50); // draw the circle
   text("Joystick X: " + joystickXValue, 30, 30);
   text("Joystick Y: " + joystickYValue, 30, 45);
@@ -221,14 +267,20 @@ function serialEvent() {
 function updateValues() {
   // update sketch.js variables with sensor data
   console.log(player.rotation);
-  //> 0
-  // < 180
-  // down 90
-  // up 270
-  //// Player
-  // X1
+
+  /*
+  if (speedValue > 0) {
+    if ((yPlayer = 140)) {
+      yPlayer -= 0.000001 + speedValue / 10;
+    }
+    if ((yPlayer = 180)) {
+      yPlayer += 0.000001 + speedValue / 10;
+    }
+  }
+*/
+
   //left
-  if (joystickXValue < 470) {
+  if (joystickXValue < 400) {
     if (xPlayer > 90) {
       xPlayer -= 3;
 
@@ -236,8 +288,8 @@ function updateValues() {
     }
     // player1.rotation -= 4;
   } //right
-  if (joystickXValue > 530) {
-    if (xPlayer < windowWidth / 2 - 45) {
+  if (joystickXValue > 600) {
+    if (xPlayer < windowWidth - 25) {
       xPlayer += 3;
       // console.log(x1);
     }
@@ -246,15 +298,15 @@ function updateValues() {
 
   // Y1
   //down
-  if (joystickYValue > 530) {
-    if (yPlayer < windowHeight - 90) {
+  if (joystickYValue > 600) {
+    if (yPlayer < windowHeight - 60) {
       yPlayer += 3;
       // console.log(y1);
       // player1.addSpeed(-.2, player1.rotation);
       // console.log(player1.rotation);
     }
   } //up
-  if (joystickYValue < 470) {
+  if (joystickYValue < 400) {
     if (yPlayer > 140) {
       yPlayer -= 3;
       // console.log(y1);
@@ -263,79 +315,79 @@ function updateValues() {
   }
   // Rotation 1
   //up
-  if (joystickYValue < 470) {
+  if (joystickYValue < 400) {
     // check up greater than 470, less than 530 -> between 470 and 530
-    if (joystickXValue > 470) {
+    if (joystickXValue > 400) {
       // check not left
-      if (joystickXValue < 530) {
+      if (joystickXValue < 600) {
         //check not right
-        player.rotation = 270;
-      }
-    }
-  }
-  //down
-  if (joystickYValue > 530) {
-    // check down greater than 470, less than 530 -> between 470 and 530
-    if (joystickXValue > 470) {
-      // check not left
-      if (joystickXValue < 530) {
-        //check not right
-        player.rotation = 90;
-      }
-    }
-  }
-  //right
-  if (joystickXValue > 530) {
-    // check right
-    if (joystickYValue < 530) {
-      //check not down
-      if (joystickYValue > 470) {
-        //check not up
         player.rotation = 0;
       }
     }
   }
-  //left
-  if (joystickXValue < 470) {
-    // check right
-    if (joystickYValue < 530) {
-      //check not down
-      if (joystickYValue > 470) {
-        //check not up
+  //down
+  if (joystickYValue > 600) {
+    // check down greater than 470, less than 530 -> between 470 and 530
+    if (joystickXValue > 400) {
+      // check not left
+      if (joystickXValue < 600) {
+        //check not right
         player.rotation = 180;
       }
     }
   }
-  //top right
-  if (joystickYValue < 470) {
-    //up
-    if (joystickXValue > 530) {
-      //right
-      player.rotation = 315;
+  //right
+  if (joystickXValue > 600) {
+    // check right
+    if (joystickYValue < 600) {
+      //check not down
+      if (joystickYValue > 400) {
+        //check not up
+        player.rotation = 90;
+      }
     }
   }
-  //bottom right
-  if (joystickYValue > 530) {
+  //left
+  if (joystickXValue < 400) {
+    // check right
+    if (joystickYValue < 600) {
+      //check not down
+      if (joystickYValue > 400) {
+        //check not up
+        player.rotation = -90;
+      }
+    }
+  }
+  //top right
+  if (joystickYValue < 400) {
     //up
-    if (joystickXValue > 530) {
+    if (joystickXValue > 600) {
       //right
       player.rotation = 45;
     }
   }
-  //bottom left
-  if (joystickYValue > 530) {
-    //down
-    if (joystickXValue < 470) {
-      //left
+  //bottom right
+  if (joystickYValue > 600) {
+    //up
+    if (joystickXValue > 600) {
+      //right
       player.rotation = 135;
     }
   }
-  //top left
-  if (joystickYValue < 470) {
-    //up
-    if (joystickXValue < 470) {
+  //bottom left
+  if (joystickYValue > 600) {
+    //down
+    if (joystickXValue < 400) {
       //left
       player.rotation = 225;
+    }
+  }
+  //top left
+  if (joystickYValue < 400) {
+    //up
+    if (joystickXValue < 400) {
+      //left
+      player.rotation = -45;
     }
   }
 }
