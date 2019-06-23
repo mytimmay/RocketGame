@@ -1,7 +1,8 @@
 var serial; // variable to hold an instance of the serialport library
-var portName = "COM5"; // fill in your serial port name here
+var portName = "COM4"; // fill in your serial port name here
 
 var speedValue;
+var directionRocket;
 var joystickXValue;
 var joystickYValue;
 var rocketOneToggle;
@@ -15,7 +16,7 @@ var confirmButton;
 
 var xPlayer;
 var yPlayer;
-var rotationPlayer;
+var rotation;
 var readyPlayer;
 var firePlayer;
 var pointsPlayer;
@@ -25,9 +26,43 @@ var heartsPlayer;
 var wins;
 var gameState;
 
+var fireLeftRocket;
+var fireAnimLeftRocket;
+var fireRightRocket;
+var fireAnimRightRocket;
+var fireCenterRocket;
+var fireAnimCenterRocket;
+var smoke;
+var smokeAnim;
+
+//the scene is twice the size of the canvas
+var SCENE_W = 3500;
+var SCENE_H = 6000;
+
 function preload() {
   fontTitle = loadFont("assets/nasalization-rg.ttf");
   fontOther = loadFont("assets/nasalization-rg.ttf");
+
+  fireAnimLeftRocket = loadAnimation(
+    "assets/Feuer_links_1.png",
+    "assets/Feuer_links_2.png"
+  );
+
+  fireAnimRightRocket = loadAnimation(
+    "assets/Feuer_rechts_1.png",
+    "assets/Feuer_rechts_2.png"
+  );
+
+  fireAnimCenterRocket = loadAnimation(
+    "assets/Feuer_mitte_1.png",
+    "assets/Feuer_mitte_2.png"
+  );
+
+  smokeAnim = loadAnimation(
+    "assets/Rauch_vorne_1.png",
+    "assets/Rauch_mitte_1.png",
+    "assets/Rauch_hinten_1.png"
+  );
 }
 
 function setup() {
@@ -46,26 +81,26 @@ function setup() {
   gameState = 0;
   wins = 5;
 
+  world = createSprite(+960, -4290, SCENE_W, SCENE_H);
+  worldImage = loadImage("assets/Background_maße.png");
+  world.addImage(worldImage);
+
   //Player
   readyPlayer = false;
-  player = createSprite(400, 200, 50, 50);
-  //Rocket = loadImage("assets/FullRocket.png");
-  //player.addImage(Rocket);
-
-  var rocketAnimation = player.addAnimation("still", "assets/FullRocket.png");
-  rocketAnimation.offX = 18;
-  player.addAnimation(
-    "lift",
-    "assets/Feuer.png",
-    "assets/vordererRauch.png",
-    "assets/hintererRauch.png"
-  );
-  player.addAnimation("flight", "assets/Feuer.png");
+  player = createSprite(0, 0, 100, 450);
+  Rocket = loadImage("assets/FullRocket.png");
+  player.addImage(Rocket);
+  player.rotation = 0;
 
   xPlayer = windowWidth / 2;
-  yPlayer = windowHeight -= 200;
+  yPlayer = windowHeight + 275;
   pointsPlayer = 0;
   bulletsPlayer = new Group();
+
+  fireLeftRocket = new Group();
+  fireRightRocket = new Group();
+  fireCenterRocket = new Group();
+  smoke = new Group();
 }
 
 function draw() {
@@ -121,7 +156,7 @@ function draw() {
       // console.log("readyPlayer");
     }
 
-    if (keyWentDown("c")) {
+    if (confirmButton == 1) {
       readyPlayer = true;
       gameState = 1;
       // console.log(gameState);
@@ -130,14 +165,18 @@ function draw() {
 
   // GAME STATE 1 ----- GAME PLAY ----- -----
   if (gameState == 1) {
-    background("black");
+    background("red");
+    drawSprites(world);
+
+    drawSprites();
+    camera.off();
 
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(20);
     textFont(fontTitle);
     text(
-      "Um für deine erste Reise ins All gut vorbereitet zu sein \n musst du genug Sauerstoff und Treibstoff tanken. \n Da die Mengen begrenzt sind darfst du nicht mehr als insgesamt 500kg mitnehmen. \n Bestätige, wenn du die Rakete fertig getankt hast. ",
+      "Um für deine erste Reise ins All gut vorbereitet zu sein, \n musst du genügend Sauerstoff und Treibstoff tanken. \n Da die Tragkraft begrenzt ist, darfst du nicht mehr als insgesamt 500kg mitnehmen. \n Bestätige, wenn du die Rakete fertig getankt hast. ",
       windowWidth / 2,
       windowHeight / 3
     );
@@ -161,34 +200,51 @@ function draw() {
       bulletsPlayer.add(bulletPlayer);
     }
 
+    if (yPlayer < -1920) {
+      // constant downward speed
+      // (i.e., gravity)
+      player.addSpeed(0.25, 90);
+    }
+
+    if (speedValue > 1 && speedValue < 20) {
+      fireLeftRocket = createSprite(xPlayer - 23, yPlayer + 209, 10, 10);
+      fireLeftRocket.addAnimation("default", fireAnimLeftRocket);
+      fireLeftRocket.life = 2;
+
+      fireRightRocket = createSprite(xPlayer + 24, yPlayer + 210, 10, 10);
+      fireRightRocket.addAnimation("default", fireAnimRightRocket);
+      fireRightRocket.life = 2;
+
+      fireCenterRocket = createSprite(xPlayer + 1, yPlayer + 216, 10, 10);
+      fireCenterRocket.addAnimation("default", fireAnimCenterRocket);
+      fireCenterRocket.life = 2;
+
+      smoke = createSprite(xPlayer, yPlayer + 250, 10, 10);
+      smoke.addAnimation("default", smokeAnim);
+      smoke.life = 2;
+    }
     // constant downward speed
     // (i.e., gravity)
-    //player.addSpeed(1, 90);
 
-    //Rocket start animation
-    if (speedValue > 1 && speedValue < 20) {
-      player.changeAnimation(lift);
-    } else if (speedValue > 20) {
-      player.changeAnimation(flight);
-    } else {
-      player.changeAnimation(still);
-    }
-
-    /*
-    //Rocket animation
-    if (rocketOneToggle == 1 && rocketOneButton == 1) {
-      rocket.getImageAt(1);
-    }
-    if (rocketTwoToggle == 1 && rocketTwoButton == 1) {
-      rocket.getImageAt(2);
-    }
-    if (rocketThreeToggle == 1 && rocketThreeButton == 1) {
-      rocket.getImageAt(3);
-    }
-*/
     // Update Values
-    drawSprites();
     updateValues();
+
+    //set the camera position to the ghost position
+    camera.position.x = player.velocity.x + windowWidth / 2;
+    camera.position.y = player.velocity.y + windowHeight - 200;
+
+    camera.zoom = 0.5;
+
+    //map borders - Game Over
+    if (player.velocity.x > 3500) {
+      gameState = 2;
+    }
+    if (player.velocity.x < -3500) {
+      gameState = 2;
+    }
+    if (player.velocity.y < -12000) {
+      gameState = 2;
+    }
   }
 
   // GAME STATE 2 ----- GAME OVER ----- -----
@@ -247,8 +303,8 @@ function serialEvent() {
       var sensors = split(inString, ","); // split the string on the commas
       if (sensors.length >= 2) {
         // if there are three elements
-        joystickXValue = map(sensors[0], 0, 1023, 0, width); // element 0 is the locH
-        joystickYValue = map(sensors[1], 0, 1023, 0, height); // element 1 is the locV
+        joystickYValue = map(sensors[0], 0, 1023, 0, width); // element 0 is the locH
+        joystickXValue = map(sensors[1], 0, 1023, 0, height); // element 1 is the locV
         speedValue = map(sensors[2], 0, 1023, 0, 1023);
         rocketOneToggle = map(sensors[3], 0, 1, 0, 1);
         rocketTwoToggle = map(sensors[4], 0, 1, 0, 1);
@@ -268,131 +324,24 @@ function updateValues() {
   // update sketch.js variables with sensor data
   console.log(player.rotation);
 
-  /*
-  if (speedValue > 0) {
-    if ((yPlayer = 140)) {
-      yPlayer -= 0.000001 + speedValue / 10;
-    }
-    if ((yPlayer = 180)) {
-      yPlayer += 0.000001 + speedValue / 10;
-    }
-  }
-*/
+  // Rotation
 
-  //left
+  // Linke Ausrichtung
   if (joystickXValue < 400) {
-    if (xPlayer > 90) {
-      xPlayer -= 3;
-
-      // console.log(x1);
-    }
-    // player1.rotation -= 4;
-  } //right
-  if (joystickXValue > 600) {
-    if (xPlayer < windowWidth - 25) {
-      xPlayer += 3;
-      // console.log(x1);
-    }
-    // player1.rotation += 4;
+    player.rotation -= 2;
   }
 
-  // Y1
-  //down
-  if (joystickYValue > 600) {
-    if (yPlayer < windowHeight - 60) {
-      yPlayer += 3;
-      // console.log(y1);
-      // player1.addSpeed(-.2, player1.rotation);
-      // console.log(player1.rotation);
-    }
-  } //up
-  if (joystickYValue < 400) {
-    if (yPlayer > 140) {
-      yPlayer -= 3;
-      // console.log(y1);
-      // player1.addSpeed(.2, player1.rotation);
-    }
-  }
-  // Rotation 1
-  //up
-  if (joystickYValue < 400) {
-    // check up greater than 470, less than 530 -> between 470 and 530
-    if (joystickXValue > 400) {
-      // check not left
-      if (joystickXValue < 600) {
-        //check not right
-        player.rotation = 0;
-      }
-    }
-  }
-  //down
-  if (joystickYValue > 600) {
-    // check down greater than 470, less than 530 -> between 470 and 530
-    if (joystickXValue > 400) {
-      // check not left
-      if (joystickXValue < 600) {
-        //check not right
-        player.rotation = 180;
-      }
-    }
-  }
-  //right
+  // Rechte Ausrichtung
   if (joystickXValue > 600) {
-    // check right
-    if (joystickYValue < 600) {
-      //check not down
-      if (joystickYValue > 400) {
-        //check not up
-        player.rotation = 90;
-      }
-    }
+    player.rotation += 2;
   }
-  //left
-  if (joystickXValue < 400) {
-    // check right
-    if (joystickYValue < 600) {
-      //check not down
-      if (joystickYValue > 400) {
-        //check not up
-        player.rotation = -90;
-      }
-    }
-  }
-  //top right
-  if (joystickYValue < 400) {
-    //up
-    if (joystickXValue > 600) {
-      //right
-      player.rotation = 45;
-    }
-  }
-  //bottom right
-  if (joystickYValue > 600) {
-    //up
-    if (joystickXValue > 600) {
-      //right
-      player.rotation = 135;
-    }
-  }
-  //bottom left
-  if (joystickYValue > 600) {
-    //down
-    if (joystickXValue < 400) {
-      //left
-      player.rotation = 225;
-    }
-  }
-  //top left
-  if (joystickYValue < 400) {
-    //up
-    if (joystickXValue < 400) {
-      //left
-      player.rotation = -45;
-    }
+
+  //Movement
+
+  if (speedValue > 10) {
+    player.addSpeed(speedValue / 10, player.rotation + 270);
   }
 }
-// rotation1 = map(sensorR1, 0, 1023, -90, 90);
-// player1.rotation = rotation1;
 
 function printList(portList) {
   // portList is an array of serial port names

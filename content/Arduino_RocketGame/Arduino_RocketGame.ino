@@ -17,6 +17,10 @@ const int rocketThreeLedGreenPin = 27;
 const int rocketThreeLedRedPin = 25;
 const int rocketThreeButtonPin = 29;
 
+const int boxLedRedPin = 34;
+const int boxLedGreenPin = 36;
+const int boxLedBluePin = 37;
+
 const int startButtonPin = 31;
 const int confirmButtonPin = 33;
 
@@ -57,6 +61,10 @@ void setup() {
   pinMode(rocketThreeLedGreenPin, OUTPUT); // LED Green
   pinMode(rocketThreeLedRedPin, OUTPUT); // LED RED
   pinMode(rocketThreeButtonPin, INPUT); // ButtonValue
+
+  pinMode(boxLedRedPin, OUTPUT);
+  pinMode(boxLedGreenPin, OUTPUT);
+  pinMode(boxLedBluePin, OUTPUT);
 
   pinMode(startButtonPin, INPUT); // ButtonValue
   pinMode(confirmButtonPin, INPUT); // ButtonValue
@@ -152,6 +160,7 @@ void loop() {
   lcd.println("          ");
   lcd.setCursor(0, 0);
 
+digitalWrite(boxLedRedPin, HIGH);
 
    
 if (rocketOneToggle == LOW){
