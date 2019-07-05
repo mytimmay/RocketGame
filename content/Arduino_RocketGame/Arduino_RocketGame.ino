@@ -1,6 +1,7 @@
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+const int JoystickButtonPin = 6;
 
 const int rocketOneTogglePin = 9;
 const int rocketOneLedGreenPin = 8;
@@ -24,6 +25,7 @@ const int boxLedBluePin = 37;
 const int startButtonPin = 31;
 const int confirmButtonPin = 33;
 
+int JoystickButtonValue;
 int joystickXValue;
 int joystickYValue;
 int speedValue;
@@ -44,8 +46,8 @@ void setup() {
   lcd.begin(16, 2);
   
   //Joystick
-  pinMode(6, INPUT); // Joystickbutton
-  digitalWrite(6, HIGH); // Joystickbutton
+  pinMode(JoystickButtonPin, INPUT); // Joystickbutton
+  digitalWrite(JoystickButtonPin, HIGH); // Joystickbutton
   
   pinMode(rocketOneTogglePin, INPUT); // ButtonValue
   pinMode(rocketOneLedGreenPin, OUTPUT); // LED Green
@@ -148,7 +150,13 @@ void loop() {
         // read the sensor:
     confirmButton = digitalRead(confirmButtonPin);
     // print the results:
-    Serial.println(confirmButton);
+    Serial.print(confirmButton);
+    Serial.print(",");
+
+            // read the sensor:
+    JoystickButtonValue = digitalRead(JoystickButtonPin);
+    // print the results:
+    Serial.println(JoystickButtonValue);
   }
 
    
