@@ -49,36 +49,28 @@ var SCENE_H = 6000;
 function preload() {
   //Font
   fontTitle = loadFont("assets/font/lucida-console.ttf");
-  fontOther = loadFont("assets/font/nasalization-rg.ttf");
 
   //Title Images
   Title_background = loadImage("assets/Title_Background.png");
-  TitleImage = loadImage("assets/Title.png");
+  TitleImage = loadImage("assets/GameOver_Win_Images/Startscreen.png");
   astronautImage = loadImage("assets/Astronaut.png");
 
   //Interface-Text Images
-  TitleTextImage = loadImage("assets/Interface_Text/Text_Title.png");
-  TankTextImage = loadImage("assets/Interface_Text/Text_Tank.png");
+  TankTextImage = loadImage("assets/Interface_Text/Tank_Text.png");
   SpeedTextImage = loadImage("assets/Interface_Text/Speed.png");
   TankImage = loadImage("assets/Interface_Text/Tank.png");
   AbdockenTextImage = loadImage(
-    "assets/Interface_Text/Text_Haltevorrichtung.png"
+    "assets/Interface_Text/Haltevorrichtung_Text.png"
   );
-  SchubTextImage = loadImage("assets/Interface_Text/Text_Schub.png");
-  SchubabbauTextImage = loadImage("assets/Interface_Text/Text_Schubabbau.png");
-  StartTextImage = loadImage("assets/Interface_Text/Text_Start.png");
-  ToggleTextImage = loadImage("assets/Interface_Text/Text_Toggle.png");
+  SchubTextImage = loadImage("assets/Interface_Text/Schub_Text.png");
+  SchubabbauTextImage = loadImage("assets/Interface_Text/Schubabbau_Text.png");
+  ToggleTextImage = loadImage("assets/Interface_Text/Toggle_Text.png");
+  ToggleMiddleTextImage = loadImage(
+    "assets/Interface_Text/ToggleMiddle_Text.png"
+  );
   SpaceStationTextImage = loadImage(
-    "assets/Interface_Text/Text_SpaceStation.png"
+    "assets/Interface_Text/SpaceStation_Text.png"
   );
-
-  //Button Images
-  Button_StartImage = loadImage("assets/Buttons/Button_Start.png");
-  Button_ConfirmImage = loadImage("assets/Buttons/Button_Confirm.png");
-  Button_RocketImage = loadImage("assets/Buttons/Button_Rocket.png");
-  Button_SpeedImage = loadImage("assets/Buttons/Button_Speed.png");
-  Button_ToggleImage = loadImage("assets/Buttons/Button_Toggle.png");
-  Button_JoystickImage = loadImage("assets/Buttons/Joystick.png");
 
   //World Image
   worldImage = loadImage("assets/Final_Background_maße.jpg");
@@ -96,6 +88,21 @@ function preload() {
 
   //Aimer
   AimerImage = loadImage("assets/Aimer.png");
+
+  //GameOver Images
+  WinImage = loadImage("assets/GameOver_Win_Images/MissionComplete.png");
+  GameOverDangerZoneImage = loadImage(
+    "assets/GameOver_Win_Images/DangerZone_GameOver.png"
+  );
+  GameOverTreibstoffImage = loadImage(
+    "assets/GameOver_Win_Images/Treibstoff_GameOver.png"
+  );
+  GameOverSauerstoffImage = loadImage(
+    "assets/GameOver_Win_Images/Sauerstoff_GameOver.png"
+  );
+  GameOverCollissionImage = loadImage(
+    "assets/GameOver_Win_Images/Kollision_GameOver.png"
+  );
 
   //Sound
   soundFormats("mp3", "ogg");
@@ -127,7 +134,7 @@ function setup() {
   //or Choose other Levels
   //GameStates: Title, GamePlay, SpaceStation, Win, GameOverBegrenzung/Treibstoff/Sauerstoff/Collide
   //GamePlayStates: Fuel, Abdocken, Schub, Toggle, ToggleMiddle, Schubabbau.
-  gameState = "GamePlay";
+  gameState = "Title";
   GamePlayState = "Fuel";
 
   //Astronaut
@@ -174,7 +181,6 @@ function setup() {
 
   xPlayer = windowWidth / 2;
   yPlayer = windowHeight - 20;
-  pointsPlayer = 0;
 
   TriebwerkLinks = createSprite(xPlayer, yPlayer, 100, 450);
   TriebwerkLinks.addAnimation("StandT1", "assets/Triebwerk_links.png");
@@ -210,38 +216,14 @@ function setup() {
 function draw() {
   // GAME STATE  ----- Title (StartScreen) ----- -----
   if (gameState == "Title") {
-    var Title = createSprite(windowWidth / 2, 300, 857, 461);
+    camera.off();
+    var Title = createSprite(windowWidth / 2, windowHeight / 2, 857, 461);
     Title.addImage(TitleImage);
-
-    var TitleText = createSprite(windowWidth / 2, windowHeight - 250);
-    TitleText.addImage(TitleTextImage);
-
-    var Button_Start = createSprite(windowWidth / 2 - 250, windowHeight - 165);
-    Button_Start.addImage(Button_StartImage);
 
     background(Title_background);
 
     drawSprite(Title);
-    drawSprite(TitleText);
     drawSprite(Astronaut);
-    drawSprite(Button_Start);
-
-    fill(255);
-    textSize(28);
-    textLeading(45);
-    textAlign(CENTER, CENTER);
-    textFont(fontTitle);
-    text(
-      "Willkommen im Astronautenprogramm \nund zu deinem ersten Flug ins All.",
-      windowWidth / 2,
-      windowHeight - 330
-    );
-    textAlign(LEFT);
-    text(
-      "Drücke Start um deine \nReise ins All zu beginnen.",
-      windowWidth / 2 - 150,
-      windowHeight - 170
-    );
 
     updateAstronautPosition();
 
@@ -297,6 +279,7 @@ function draw() {
 
     fill(255);
     textSize(15);
+    textFont(fontTitle);
     text(
       "Geschwindigkeit: " + speedValue + " m/s²",
       windowWidth - 385,
@@ -316,18 +299,9 @@ function draw() {
     );
 
     if (GamePlayState == "Fuel") {
-      var TankText = createSprite(300, windowHeight / 2 - 50);
+      var TankText = createSprite(300, windowHeight / 2);
       TankText.addImage(TankTextImage);
-
-      var Button_Joystick = createSprite(135, windowHeight / 2 + 10);
-      Button_Joystick.addImage(Button_JoystickImage);
-
-      var Button_Confirm = createSprite(135, windowHeight / 2 + 135);
-      Button_Confirm.addImage(Button_ConfirmImage);
-
       drawSprite(TankText);
-      drawSprite(Button_Joystick);
-      drawSprite(Button_Confirm);
 
       //Update Treibstoff/Sauerstoff
       if (startButton == 1) {
@@ -341,32 +315,10 @@ function draw() {
           TankSound.stop();
         }
       }
-
       if (!GroundControlSound.isPlaying()) {
         GroundControlSound.setVolume(0.1);
         GroundControlSound.play();
       }
-
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Um für deine erste Reise ins All \ngut vorbereitet zu sein, musst du \ngenug Sauerstoff und Treibstoff \ntanken. Da die Traglast begrenzt \nist, darfst du das Gewicht von \n1500 Tonnen nicht überschreiten.",
-        105,
-        280
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Halte blau oder grün gedrückt und \nbewege den Joystick nach oben oder \nunten, um die Mengen einzustellen. \nBestätige deine Eingabe mit Druck \nauf den Joystick!",
-        200,
-        530
-      );
-
       //NEXT LEVEL
       if (joystickButtonValue == 0) {
         GamePlayState = "Abdocken";
@@ -374,34 +326,9 @@ function draw() {
     }
 
     if (GamePlayState == "Abdocken") {
-      var AbdockenText = createSprite(300, windowHeight / 2 - 110);
+      var AbdockenText = createSprite(300, windowHeight / 2);
       AbdockenText.addImage(AbdockenTextImage);
-
-      var Button_Confirm = createSprite(145, windowHeight / 2);
-      Button_Confirm.addImage(Button_ConfirmImage);
-
       drawSprite(AbdockenText);
-      drawSprite(Button_Confirm);
-
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Gut gemacht! Die Rakete ist nun \nbetankt. Jetzt ist alles bereit. \nNicht nervös werden, wir beglei-\nten dich auf deiner Reise. \nBist du bereit für dein bisher \ngrößtest Abenteuer? ",
-        105,
-        280
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Halte grün gedrückt, um die \nHaltevorrichtung einzufahren.",
-        220,
-        500
-      );
 
       //NEXT LEVEL
       if (startButton == 1) {
@@ -423,38 +350,9 @@ function draw() {
     }
 
     if (GamePlayState == "Schub") {
-      var ToggleText = createSprite(300, windowHeight / 2 - 90);
-      ToggleText.addImage(ToggleTextImage);
-
-      var Button_Speed = createSprite(145, windowHeight / 2 - 50);
-      Button_Speed.addImage(Button_SpeedImage);
-
-      var Button_Joystick = createSprite(145, windowHeight / 2 + 55);
-      Button_Joystick.addImage(Button_JoystickImage);
-
-      drawSprite(ToggleText);
-      drawSprite(Button_Speed);
-      drawSprite(Button_Joystick);
-
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Super! Du bist nun bereit und \nstartklar. Viel Glück! \nDer Countdown läuft ...",
-        105,
-        275
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Baue Schub auf, um zu starten.\n\nSteuere die Rakete nach links \noder rechts.",
-        230,
-        480
-      );
+      var SchubText = createSprite(300, windowHeight / 2);
+      SchubText.addImage(SchubTextImage);
+      drawSprite(SchubText);
 
       if (speedValue > 1) {
         if (!RocketSound.isPlaying()) {
@@ -462,7 +360,6 @@ function draw() {
           RocketSound.play();
         }
       }
-
       //NEXT LEVEL
       if (player.velocity.y < -1000) {
         GamePlayState = "Toggle";
@@ -480,42 +377,16 @@ function draw() {
     }
 
     if (GamePlayState == "Toggle") {
-      var ToggleText = createSprite(300, windowHeight / 2 - 110);
+      var ToggleText = createSprite(300, windowHeight / 2);
       ToggleText.addImage(ToggleTextImage);
-
-      var Button_Rocket = createSprite(135, windowHeight / 2 + 30);
-      Button_Rocket.addImage(Button_RocketImage);
-      var Button_Toggle = createSprite(135, windowHeight / 2 - 110);
-      Button_Toggle.addImage(Button_ToggleImage);
-
       drawSprite(ToggleText);
-      drawSprite(Button_Rocket);
-      drawSprite(Button_Toggle);
 
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Toller Start! Du hast 1500 m\nüberstiegen. Nun musst du das\nlinke und rechte Triebwerk ab-\nwerfen. Achte darauf, dies\ngleichzeitig zu tun.",
-        110,
-        240
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Entsichere zunächst die äußeren \nTriebwerke.\n\nDie Triebwerke sind nun zum Ab-\nwerfen bereit. Bestätige den \nAbwurf mit rot.",
-        210,
-        410
-      );
       updateTreibstoffVerbrauch();
       updateSauerstoffVerbrauch();
       updateGravitation();
       updateRocketPosition();
       updateAnimation();
+
       if (
         rocketOneButton == 1 &&
         rocketOneToggle == 1 &&
@@ -531,37 +402,9 @@ function draw() {
     }
 
     if (GamePlayState == "ToggleMiddle") {
-      var ToggleText = createSprite(300, windowHeight / 2 - 110);
-      ToggleText.addImage(ToggleTextImage);
-
-      var Button_Rocket = createSprite(135, windowHeight / 2 + 30);
-      Button_Rocket.addImage(Button_RocketImage);
-      var Button_Toggle = createSprite(135, windowHeight / 2 - 110);
-      Button_Toggle.addImage(Button_ToggleImage);
-
-      drawSprite(ToggleText);
-      drawSprite(Button_Rocket);
-      drawSprite(Button_Toggle);
-
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Klasse! Die äußeren Triebwerke\nwurden erfolgreich abgeworfen.\nWiederhole den letzten Schritt\nmit dem mittleren Triebwerk.",
-        110,
-        250
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Entsichere das letzte\nTriebwerk.\n\nDas Triebwerk ist nun zum Ab-\nwerfen bereit. Bestätige den \nAbwurf mit rot.",
-        210,
-        410
-      );
+      var ToggleMiddleText = createSprite(300, windowHeight / 2);
+      ToggleMiddleText.addImage(ToggleMiddleTextImage);
+      drawSprite(ToggleMiddleText);
 
       updateTriebwerkLinksFall();
       updateTriebwerkRechtsFall();
@@ -578,34 +421,9 @@ function draw() {
     }
 
     if (GamePlayState == "Schubabbau") {
-      var SchubabbauText = createSprite(300, windowHeight / 2 - 110);
-      SchubabbauText.addImage(ToggleTextImage);
-
-      var Button_Speed = createSprite(160, windowHeight / 2);
-      Button_Speed.addImage(Button_SpeedImage);
-
+      var SchubabbauText = createSprite(300, windowHeight / 2);
+      SchubabbauText.addImage(SchubabbauTextImage);
       drawSprite(SchubabbauText);
-      drawSprite(Button_Speed);
-
-      fill(255);
-      textAlign(LEFT);
-      textSize(20);
-      textLeading(30);
-      textFont(fontTitle);
-
-      text(
-        "Sehr gut gemacht! Du hast alle\nTriebwerke erfolgreich abge-\nworfen. Achte nun darauf, dass \ndeine Geschwindigkeit nicht mehr \nals circa 40 m/s² beträgt, sobald \ndu die Raumstation erreichst.",
-        110,
-        250
-      );
-
-      textSize(15);
-      textLeading(25);
-      text(
-        "Baue Schub ab, um deine \nGeschwindigkeit zu reduzieren.",
-        250,
-        470
-      );
 
       updateRocketPosition();
       updateTriebwerkMitteFall();
@@ -638,16 +456,14 @@ function draw() {
     TriebwerkMitte.position.x = player.position.x;
     TriebwerkMitte.position.y = player.position.y;
 
-    // constant downward speed
-    // (i.e., gravity)
-    updateGravitation();
-
-    // Update Values
-    updateTraglast();
-
     //set the camera position to the ghost position
     camera.position.x = player.velocity.x + windowWidth / 2;
     camera.position.y = player.velocity.y + windowHeight - 200;
+
+    // constant downward speed(gravity)
+    updateGravitation();
+    // Update Values
+    updateTraglast();
 
     //map borders - Game Over
     if (player.velocity.x > 1500) {
@@ -664,41 +480,14 @@ function draw() {
   // GAME STATE ----- SpaceStation ----- -----
   if (gameState == "SpaceStation") {
     camera.off();
-    var TankText = createSprite(300, windowHeight / 2);
-    TankText.addImage(TankTextImage);
-
-    var Button_Joystick = createSprite(135, windowHeight / 2 + 70);
-    Button_Joystick.addImage(Button_JoystickImage);
-
-    var Button_Confirm = createSprite(135, windowHeight / 2 + 185);
-    Button_Confirm.addImage(Button_ConfirmImage);
+    var SpaceStationText = createSprite(300, windowHeight / 2);
+    SpaceStationText.addImage(SpaceStationTextImage);
 
     background(Title_background);
 
-    drawSprite(TankText);
+    drawSprite(SpaceStationText);
     drawSprite(SpaceStationFrontal);
-    drawSprite(Button_Confirm);
-    drawSprite(Button_Joystick);
     drawSprite(Aimer);
-
-    fill(255);
-    textAlign(LEFT);
-    textSize(20);
-    textLeading(30);
-    textFont(fontTitle);
-    text(
-      "Hallo?! ... Alles in Ordnung bei \ndir? Du hast den Kontakt zur Nasa \nverloren. Du musst die Steuerung \nübernehmen und manuell andocken. \nBist du bereit dafür? Schnell, \ndu driftest zu weit ab!",
-      110,
-      320
-    );
-    textAlign(LEFT);
-    textSize(15);
-    textLeading(25);
-    text(
-      "Steuere die Rakete so, dass du \ngenau auf die Andockstelle zu-\nhälst. Bestätige mit grün.",
-      210,
-      580
-    );
 
     updateSpaceStationPosition();
     updateAimerPosition();
@@ -715,83 +504,87 @@ function draw() {
 
   if (gameState == "Win") {
     camera.off();
-    background("black");
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    textFont(fontTitle);
-    text(
-      "Deine Mission war bisher ein voller Erfolg. Du hast die Rakete ohne einen Kratzer an die Raumstation gebracht.\nIhr habt dringend benötigte Güter und Ersatzteile an die Station gebracht, diese\nkann Dank euch ihren Betrieb fortsetzen.",
-      windowWidth / 2,
-      windowHeight / 3
-    );
+
+    background(Title_background);
+
+    var WinText = createSprite(windowWidth / 2, windowHeight / 2);
+    WinText.addImage(WinImage);
+    drawSprite(WinText);
+
+    //Push Confirm to Reset
+    GameOverReset();
   }
 
   // GAME STATE ----- GAME OVER ----- -----
 
   if (gameState == "GameOverBegrenzung") {
     camera.off();
-    background("black");
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    textFont(fontTitle);
-    text(
-      "Du bist vom Kurs abgekommen. Da kann ja meine 90-jährige Oma besser Karten lesen!\nKauf dir ne Brille und versuch's nochmal!",
-      windowWidth / 2,
-      windowHeight / 3
-    );
 
-    textFont(fontOther);
-    textSize(200);
+    background(Title_background);
+
+    var GameOverDangerZoneText = createSprite(
+      windowWidth / 2,
+      windowHeight / 2
+    );
+    GameOverDangerZoneText.addImage(GameOverDangerZoneImage);
+    drawSprite(GameOverDangerZoneText);
+
+    //Push Confirm to Reset
+    GameOverReset();
   }
 
   if (gameState == "GameOverTreibstoff") {
     camera.off();
-    background("black");
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    textFont(fontTitle);
-    text(
-      "Du wolltest wohl cool sein und ein bisschen durch die Gegen cruisen...\nHättest du mal besser mehr Treibstoff mitgenommen, denn jetzt treibst du antriebslos durch's All!",
+
+    background(Title_background);
+
+    var GameOverTreibstoffText = createSprite(
       windowWidth / 2,
-      windowHeight / 3
+      windowHeight / 2
     );
+    GameOverTreibstoffText.addImage(GameOverTreibstoffImage);
+    drawSprite(GameOverTreibstoffText);
+
+    //Push Confirm to Reset
+    GameOverReset();
   }
 
   if (gameState == "GameOverSauerstoff") {
     camera.off();
-    background("black");
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    textFont(fontTitle);
-    text(
-      "Du wolltest wohl cool sein und ein bisschen durch die Gegen cruisen...\nHättest du mal besser mehr Sauerstoff mitgenommen, denn jetzt treibst du atemlos durch die Nacht!",
+
+    background(Title_background);
+
+    var GameOverSauerstoffText = createSprite(
       windowWidth / 2,
-      windowHeight / 3
+      windowHeight / 2
     );
+    GameOverSauerstoffText.addImage(GameOverSauerstoffImage);
+    drawSprite(GameOverSauerstoffText);
+
+    //Push Confirm to Reset
+    GameOverReset();
   }
 
   if (gameState == "GameOverCollide") {
     camera.off();
-    background("black");
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    textFont(fontTitle);
-    text(
-      "Du warst zu schnell unterwegs und hast die Raumstation gerammt. Das war schlecht... Ihr seid alle tot!",
+
+    background(Title_background);
+
+    var GameOverCollissionText = createSprite(
       windowWidth / 2,
-      windowHeight / 3
+      windowHeight / 2
     );
+    GameOverCollissionText.addImage(GameOverCollissionImage);
+    drawSprite(GameOverCollissionText);
+
+    //Push Confirm to Reset
+    GameOverReset();
   }
 
+  /*
+  //shows Values from Arduino on Screen
   textAlign(LEFT);
   textSize(15);
-  textFont(fontOther);
-  //ellipse(joystickXValue, joystickYValue, 50, 50); // draw the circle
   text("Joystick X: " + joystickXValue, 30, 30);
   text("Joystick Y: " + joystickYValue, 30, 45);
   text("Geschwindigkeit: " + speedValue, 30, 60);
@@ -804,6 +597,7 @@ function draw() {
   text("Start: " + startButton, 30, 165);
   text("Bestätigen: " + confirmButton, 30, 180);
   text("JoystickButton: " + joystickButtonValue, 30, 195);
+*/
 }
 
 function serialEvent() {
@@ -998,21 +792,6 @@ function updateAstronautPosition() {
 function updateAimerPosition() {
   Aimer.position.x = joystickXValue * 2 - 200;
   Aimer.position.y = joystickYValue / 2;
-  /*if (joystickXValue < 400) {
-    Aimer.position.x -= 5;
-  }
-  // Rechte Ausrichtung
-  if (joystickXValue > 650) {
-    Aimer.position.x += 5;
-  }
-  if (joystickYValue > 800) {
-    Aimer.position.y -= 5;
-  }
-  // Rechte Ausrichtung
-  if (joystickYValue < 1250) {
-    Aimer.position.y += 5;
-  }
-  */
 }
 
 function updateSauerstoffVerbrauch() {
@@ -1064,7 +843,34 @@ function updateAnimation() {
   }
 }
 
-function soundRocketStart() {}
+function GameOverReset() {
+  if (startButton == 1) {
+    camera.on();
+    gameState = "Title";
+    GamePlayState = "Fuel";
+
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+    player.rotation = 0;
+
+    TriebwerkLinks.velocity.x = 0;
+    TriebwerkLinks.velocity.y = 0;
+    TriebwerkRechts.velocity.x = 0;
+    TriebwerkRechts.velocity.y = 0;
+    TriebwerkMitte.velocity.x = 0;
+    TriebwerkMitte.velocity.y = 0;
+    TriebwerkLinks.rotation = 0;
+    TriebwerkRechts.rotation = 0;
+    TriebwerkMitte.rotation = 0;
+
+    Treibstoff.height = 50;
+    Sauerstoff.height = 50;
+    Treibstoff.position.y = windowHeight - 185;
+    Sauerstoff.position.y = windowHeight - 185;
+
+    TowerBridge.position.x = windowWidth / 2 + 55;
+  }
+}
 
 function printList(portList) {
   // portList is an array of serial port names
