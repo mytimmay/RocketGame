@@ -42,6 +42,19 @@ var SpaceStation;
 var SpaceStationFrontal;
 var smoke;
 
+//Text and Interfacefields
+var Title;
+var Scheinwerfer;
+var Tank;
+var Speed;
+var TankText;
+var AbdockenText;
+var SchubText;
+var ToggleText;
+var ToggleMiddleText;
+var SchubabbauText;
+var SpaceStationText;
+
 //Set LevelSize
 var SCENE_W = 3500;
 var SCENE_H = 6000;
@@ -211,14 +224,36 @@ function setup() {
     "assets/Rauch_mitte.png",
     "assets/Rauch_hinten.png"
   );
+
+  //Text and Interfacefields
+  Title = createSprite(windowWidth / 2, windowHeight / 2, 857, 461);
+  Title.addImage(TitleImage);
+  Scheinwerfer = createSprite(windowWidth / 2, windowHeight + 90);
+  Scheinwerfer.addImage(ScheinwerferImage);
+  Tank = createSprite(windowWidth - 250, windowHeight - 350);
+  Tank.addImage(TankImage);
+  Speed = createSprite(windowWidth - 250, windowHeight - 700);
+  Speed.addImage(SpeedTextImage);
+  TankText = createSprite(300, windowHeight / 2);
+  TankText.addImage(TankTextImage);
+  AbdockenText = createSprite(300, windowHeight / 2);
+  AbdockenText.addImage(AbdockenTextImage);
+  SchubText = createSprite(300, windowHeight / 2);
+  SchubText.addImage(SchubTextImage);
+  ToggleText = createSprite(300, windowHeight / 2);
+  ToggleText.addImage(ToggleTextImage);
+  ToggleMiddleText = createSprite(300, windowHeight / 2);
+  ToggleMiddleText.addImage(ToggleMiddleTextImage);
+  SchubabbauText = createSprite(300, windowHeight / 2);
+  SchubabbauText.addImage(SchubabbauTextImage);
+  SpaceStationText = createSprite(300, windowHeight / 2);
+  SpaceStationText.addImage(SpaceStationTextImage);
 }
 
 function draw() {
   // GAME STATE  ----- Title (StartScreen) ----- -----
   if (gameState == "Title") {
     camera.off();
-    var Title = createSprite(windowWidth / 2, windowHeight / 2, 857, 461);
-    Title.addImage(TitleImage);
 
     background(Title_background);
 
@@ -237,11 +272,8 @@ function draw() {
 
   // GAME STATE ----- GamePlay ----- -----
   if (gameState == "GamePlay") {
-    background("red");
+    background("black");
     camera.zoom = 1;
-
-    var Scheinwerfer = createSprite(windowWidth / 2, windowHeight + 90);
-    Scheinwerfer.addImage(ScheinwerferImage);
 
     drawSprite(world);
     drawSprite(TowerBridge);
@@ -267,16 +299,12 @@ function draw() {
     //Turn Camera off to place Text,Buttons... on the Screen
     camera.off();
 
-    var Tank = createSprite(windowWidth - 250, windowHeight - 350);
-    Tank.addImage(TankImage);
-    var Speed = createSprite(windowWidth - 250, windowHeight - 700);
-    Speed.addImage(SpeedTextImage);
-
     drawSprite(Tank);
     drawSprite(Speed);
     drawSprite(Sauerstoff);
     drawSprite(Treibstoff);
 
+    //////Text and Interfacearea GamePlay
     fill(255);
     textSize(15);
     textFont(fontTitle);
@@ -297,10 +325,9 @@ function draw() {
       windowWidth - 390,
       windowHeight / 2 + 10
     );
+    /////
 
     if (GamePlayState == "Fuel") {
-      var TankText = createSprite(300, windowHeight / 2);
-      TankText.addImage(TankTextImage);
       drawSprite(TankText);
 
       //Update Treibstoff/Sauerstoff
@@ -326,8 +353,6 @@ function draw() {
     }
 
     if (GamePlayState == "Abdocken") {
-      var AbdockenText = createSprite(300, windowHeight / 2);
-      AbdockenText.addImage(AbdockenTextImage);
       drawSprite(AbdockenText);
 
       //NEXT LEVEL
@@ -350,8 +375,6 @@ function draw() {
     }
 
     if (GamePlayState == "Schub") {
-      var SchubText = createSprite(300, windowHeight / 2);
-      SchubText.addImage(SchubTextImage);
       drawSprite(SchubText);
 
       if (speedValue > 1) {
@@ -377,8 +400,6 @@ function draw() {
     }
 
     if (GamePlayState == "Toggle") {
-      var ToggleText = createSprite(300, windowHeight / 2);
-      ToggleText.addImage(ToggleTextImage);
       drawSprite(ToggleText);
 
       updateTreibstoffVerbrauch();
@@ -402,8 +423,6 @@ function draw() {
     }
 
     if (GamePlayState == "ToggleMiddle") {
-      var ToggleMiddleText = createSprite(300, windowHeight / 2);
-      ToggleMiddleText.addImage(ToggleMiddleTextImage);
       drawSprite(ToggleMiddleText);
 
       updateTriebwerkLinksFall();
@@ -421,8 +440,6 @@ function draw() {
     }
 
     if (GamePlayState == "Schubabbau") {
-      var SchubabbauText = createSprite(300, windowHeight / 2);
-      SchubabbauText.addImage(SchubabbauTextImage);
       drawSprite(SchubabbauText);
 
       updateRocketPosition();
@@ -480,9 +497,6 @@ function draw() {
   // GAME STATE ----- SpaceStation ----- -----
   if (gameState == "SpaceStation") {
     camera.off();
-    var SpaceStationText = createSprite(300, windowHeight / 2);
-    SpaceStationText.addImage(SpaceStationTextImage);
-
     background(Title_background);
 
     drawSprite(SpaceStationText);
