@@ -125,7 +125,9 @@ function preload() {
   AbdockenSound = loadSound("assets/Sound/Abdocken_10sec.mp3");
   CountdownSound = loadSound("assets/Sound/countdown.mp3");
   GroundControlSound = loadSound("assets/Sound/GroundControl.mp3");
-  ApplausSound = loadSound("assets/Sound/applaus_jubel.mp3");
+  missionComplete = loadSound("assets/Sound/mission_complete.mp3");
+  GameOverSound = loadSound("assets/Sound/game_over.mp3");
+  
 }
 
 function setup() {
@@ -458,6 +460,11 @@ function draw() {
       if (speedValue >= 60) {
         if (player.collide(SpaceStation)) {
           gameState = "GameOverCollide";
+          if (!GameOverSound.isPlaying()) {
+            GameOverSound.setVolume(0.2);
+            GameOverSound.play();
+          }
+      
         }
       }
     }
@@ -485,12 +492,27 @@ function draw() {
     //map borders - Game Over
     if (player.velocity.x > 1500) {
       gameState = "GameOverBegrenzung";
+      if (!GameOverSound.isPlaying()) {
+        GameOverSound.setVolume(0.2);
+        GameOverSound.play();
+      }
     }
+    
     if (player.velocity.x < -1500) {
       gameState = "GameOverBegrenzung";
+      if (!GameOverSound.isPlaying()) {
+        GameOverSound.setVolume(0.2);
+        GameOverSound.play();
+      }
+    
     }
     if (player.velocity.y < -5800) {
       gameState = "GameOverBegrenzung";
+      if (!GameOverSound.isPlaying()) {
+        GameOverSound.setVolume(0.2);
+        GameOverSound.play();
+      }
+    
     }
   }
 
@@ -509,9 +531,9 @@ function draw() {
     if (Aimer.overlap(SpaceStationFrontal) && confirmButton == 1) {
       gameState = "Win";
 
-      if (!ApplausSound.isPlaying()) {
-        ApplausSound.setVolume(0.2);
-        ApplausSound.play();
+      if (!missionComplete.isPlaying()) {
+        missionComplete.setVolume(0.2);
+        missionComplete.play();
       }
     }
   }
