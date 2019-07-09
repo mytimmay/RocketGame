@@ -1,5 +1,5 @@
 var serial; // variable to hold an instance of the serialport library
-var portName = "COM4"; // fill in your serial port name here
+var portName = "COM3"; // fill in your serial port name here
 
 //Controll Values
 var speedValue;
@@ -713,7 +713,7 @@ function updateRocketPosition() {
   }
   //Movement
   if (speedValue > 10) {
-    player.addSpeed(speedValue / 35, player.rotation + 270);
+    player.addSpeed(speedValue / 50, player.rotation + 270);
   }
 }
 
@@ -729,7 +729,7 @@ function updateTriebwerkLinksPosition() {
   }
   //Movement
   if (speedValue > 10) {
-    TriebwerkLinks.addSpeed(speedValue / 35, player.rotation + 270);
+    TriebwerkLinks.addSpeed(speedValue / 50, player.rotation + 270);
   }
 }
 
@@ -753,7 +753,7 @@ function updateTriebwerkRechtsPosition() {
   }
   //Movement
   if (speedValue > 10) {
-    TriebwerkRechts.addSpeed(speedValue / 35, player.rotation + 270);
+    TriebwerkRechts.addSpeed(speedValue / 50, player.rotation + 270);
   }
 }
 
@@ -777,7 +777,7 @@ function updateTriebwerkMittePosition() {
   }
   //Movement
   if (speedValue > 10) {
-    TriebwerkMitte.addSpeed(speedValue / 35, player.rotation + 270);
+    TriebwerkMitte.addSpeed(speedValue / 50, player.rotation + 270);
   }
 }
 
@@ -815,11 +815,11 @@ function updateSauerstoffVerbrauch() {
   }
 
   if (Treibstoff.height <= 1) {
-    gameState = "GameOverTreibstoff";
+    gameState = "GameOverSauertoff";
   }
   if (player.velocity.y <= -3000 && GamePlayState != "Schubabbau") {
-    Treibstoff.height -= 1;
-    Treibstoff.position.y += 0.5;
+    Treibstoff.height -= 0.25;
+    Treibstoff.position.y += 0.125;
   }
 }
 
@@ -829,7 +829,11 @@ function updateTreibstoffVerbrauch() {
     Sauerstoff.position.y += 0.05;
   }
   if (Sauerstoff.height <= 1) {
-    gameState = "GameOverSauerstoff";
+    gameState = "GameOverTreibstoffstoff";
+  }
+  if (player.velocity.y <= -3000 && GamePlayState != "Schubabbau") {
+    Sauerstoff.height -= 0.25;
+    Sauerstoff.position.y += 0.125;
   }
 }
 
