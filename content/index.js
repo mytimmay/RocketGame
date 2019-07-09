@@ -830,7 +830,7 @@ function updateAimerPosition() {
   Aimer.position.y = joystickYValue / 2;
 }
 
-function updateSauerstoffVerbrauch() {
+function updateTreibstoffVerbrauch() {
   if (speedValue > 1) {
     Treibstoff.height -= 0.1;
     Treibstoff.position.y += 0.05;
@@ -845,7 +845,7 @@ function updateSauerstoffVerbrauch() {
   }
 }
 
-function updateTreibstoffVerbrauch() {
+function updateSauerstoffVerbrauch() {
   if (speedValue > 1) {
     Sauerstoff.height -= 0.1;
     Sauerstoff.position.y += 0.05;
