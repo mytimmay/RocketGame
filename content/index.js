@@ -381,7 +381,7 @@ function draw() {
     if (GamePlayState == "Schub") {
       drawSprite(SchubText);
 
-      if (speedValue > 1) {
+      if (speedValue > 10) {
         if (!RocketSound.isPlaying()) {
           RocketSound.setVolume(0.1);
           RocketSound.play();
@@ -854,8 +854,8 @@ function updateAimerPosition() {
 
 function updateTreibstoffVerbrauch() {
   if (speedValue > 1) {
-    Treibstoff.height -= 0.1;
-    Treibstoff.position.y += 0.05;
+    Treibstoff.height -= 0.05;
+    Treibstoff.position.y += 0.025;
   }
 
   if (Treibstoff.height < 1) {
@@ -869,8 +869,8 @@ function updateTreibstoffVerbrauch() {
 
 function updateSauerstoffVerbrauch() {
   if (speedValue > 1) {
-    Sauerstoff.height -= 0.1;
-    Sauerstoff.position.y += 0.05;
+    Sauerstoff.height -= 0.05;
+    Sauerstoff.position.y += 0.025;
   }
   if (Sauerstoff.height < 1) {
     gameState = "GameOverSauerstoff";

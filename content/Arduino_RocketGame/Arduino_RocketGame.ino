@@ -164,8 +164,8 @@ void loop() {
   lcd.print("Geschwindigkeit:"),
   lcd.setCursor(0, 1);
   lcd.print(speedLimited),
-  lcd.print(" km/h");
-  lcd.println("          ");
+  lcd.print(" m/s");
+  lcd.println("           ");
   lcd.setCursor(0, 0);
 
 digitalWrite(boxLedRedPin, HIGH);
