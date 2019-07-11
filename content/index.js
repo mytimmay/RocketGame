@@ -1,5 +1,5 @@
 var serial; // variable to hold an instance of the serialport library
-var portName = "COM3"; // fill in your serial port name here
+var portName = "COM4"; // fill in your serial port name here
 
 //Controll Values
 var speedValue;
@@ -116,6 +116,9 @@ function preload() {
   GameOverCollissionImage = loadImage(
     "assets/GameOver_Win_Images/Kollision_GameOver.png"
   );
+  GameOverCollissionBodenTextImage = loadImage(
+    "assets/GameOver_Win_Images/Kollision_GameOver_Boden.png"
+  );
 
   //Sound
   soundFormats("mp3", "ogg");
@@ -127,7 +130,6 @@ function preload() {
   GroundControlSound = loadSound("assets/Sound/GroundControl.mp3");
   missionComplete = loadSound("assets/Sound/mission_complete.mp3");
   GameOverSound = loadSound("assets/Sound/game_over.mp3");
-  
 }
 
 function setup() {
@@ -147,7 +149,7 @@ function setup() {
 
   //Set beginning Level to Titel with 0
   //or Choose other Levels
-  //GameStates: Title, GamePlay, SpaceStation, Win, GameOverBegrenzung/Treibstoff/Sauerstoff/Collide
+  //GameStates: Title, GamePlay, SpaceStation, Win, GameOverBegrenzung/Treibstoff/Sauerstoff/Collide/CollideBoden
   //GamePlayStates: Fuel, Abdocken, Schub, Toggle, ToggleMiddle, Schubabbau.
   gameState = "Title";
   GamePlayState = "Fuel";
@@ -461,10 +463,9 @@ function draw() {
         if (player.collide(SpaceStation)) {
           gameState = "GameOverCollide";
           if (!GameOverSound.isPlaying()) {
-            GameOverSound.setVolume(0.2);
+            GameOverSound.setVolume(0.5);
             GameOverSound.play();
           }
-      
         }
       }
     }
@@ -493,26 +494,31 @@ function draw() {
     if (player.velocity.x > 1500) {
       gameState = "GameOverBegrenzung";
       if (!GameOverSound.isPlaying()) {
-        GameOverSound.setVolume(0.2);
+        GameOverSound.setVolume(0.5);
         GameOverSound.play();
       }
     }
-    
+
     if (player.velocity.x < -1500) {
       gameState = "GameOverBegrenzung";
       if (!GameOverSound.isPlaying()) {
-        GameOverSound.setVolume(0.2);
+        GameOverSound.setVolume(0.5);
         GameOverSound.play();
       }
-    
     }
     if (player.velocity.y < -5800) {
       gameState = "GameOverBegrenzung";
       if (!GameOverSound.isPlaying()) {
-        GameOverSound.setVolume(0.2);
+        GameOverSound.setVolume(0.5);
         GameOverSound.play();
       }
-    
+    }
+    if (player.velocity.y > 20) {
+      gameState = "GameOverCollideBoden";
+      if (!GameOverSound.isPlaying()) {
+        GameOverSound.setVolume(0.5);
+        GameOverSound.play();
+      }
     }
   }
 
@@ -612,6 +618,22 @@ function draw() {
     );
     GameOverCollissionText.addImage(GameOverCollissionImage);
     drawSprite(GameOverCollissionText);
+
+    //Push Confirm to Reset
+    GameOverReset();
+  }
+
+  if (gameState == "GameOverCollideBoden") {
+    camera.off();
+
+    background(Title_background);
+
+    var GameOverCollissionBodenText = createSprite(
+      windowWidth / 2,
+      windowHeight / 2
+    );
+    GameOverCollissionBodenText.addImage(GameOverCollissionBodenTextImage);
+    drawSprite(GameOverCollissionBodenText);
 
     //Push Confirm to Reset
     GameOverReset();
@@ -836,8 +858,8 @@ function updateTreibstoffVerbrauch() {
     Treibstoff.position.y += 0.05;
   }
 
-  if (Treibstoff.height <= 1) {
-    gameState = "GameOverSauertoff";
+  if (Treibstoff.height < 1) {
+    gameState = "GameOverTreibstoff";
   }
   if (player.velocity.y <= -3000 && GamePlayState != "Schubabbau") {
     Treibstoff.height -= 0.25;
@@ -850,8 +872,8 @@ function updateSauerstoffVerbrauch() {
     Sauerstoff.height -= 0.1;
     Sauerstoff.position.y += 0.05;
   }
-  if (Sauerstoff.height <= 1) {
-    gameState = "GameOverTreibstoffstoff";
+  if (Sauerstoff.height < 1) {
+    gameState = "GameOverSauerstoff";
   }
   if (player.velocity.y <= -3000 && GamePlayState != "Schubabbau") {
     Sauerstoff.height -= 0.25;
